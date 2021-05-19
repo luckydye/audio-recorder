@@ -19,6 +19,14 @@ export default class AudioSource {
         this.gain.disconnect();
     }
 
+    setGain(val = 0) {
+        this.gain.gain.setValueAtTime(val, this.context.currentTime + 0.01);
+    }
+
+    getGain() {
+        return this.gain.gain.value;
+    }
+
     setInputStream(stream) {
         this.stream = stream;
         const audioSource = this.context.createMediaStreamSource(stream);

@@ -21,6 +21,20 @@ async function main() {
     const source = new AudioSource(audioContext);
     const channel = new AudioChannel(audioContext);
 
+    const knob = new Gyro.Knob();
+
+    knob.min = 0;
+    knob.max = 11;
+    knob.steps = 0.1;
+
+    knob.setValue(source.getGain() * 10);
+
+    knob.addEventListener('change', e => {
+        source.setGain(knob.value / 10);
+    })
+
+    headerElement.appendChild(knob);
+
     channel.setInput(source);
 
     // async. getting media but output can already be connected to someting
@@ -133,8 +147,7 @@ async function main() {
     }
 
     // monitor
-    monitorStream(source.stream, "Input", headerElement);
-    // monitorStream(outputStream, "Output", footerElement);
+    monitorStream(outputStream, "Input", headerElement);
 }
 
 function drawAudioBuffer(buffer, duration, sampleRate) {
@@ -193,9 +206,9 @@ function makeUi() {
     const startBtn = document.createElement('button');
     const playBtn = document.createElement('button');
 
-    startBtn.innerText = "Record";
-    stopBtn.innerText = "Stop";
-    playBtn.innerText = "Play";
+    startBtn.innerHTML = "Record";
+    stopBtn.innerHTML = "Stop";
+    playBtn.innerHTML = `Play`;
 
     const callbacks = {
         onStart() { },

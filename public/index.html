@@ -18,6 +18,7 @@
 
         canvas {
             display: block;
+            margin: 10px 0;
         }
         main {
             position: absolute;
@@ -27,6 +28,38 @@
             height: 100%;
             display: grid;
             grid-template-rows: auto auto 1fr auto;
+        }
+        #headerElement {
+            display: flex;
+            display: flex;
+            background: #232323;
+            border-bottom: 1px solid #323232;
+        }
+        button {
+            padding: 4px 10px;
+            background: #0c0c0c;
+            border: 1px solid rgb(54, 54, 54);
+            border-radius: 3px;
+            color: #eee;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #272727;
+        }
+        button:active {
+            background: #0c0c0c;
+        }
+        gyro-knob {
+            --color-ring: grey;
+            --color-ring-filled: grey;
+        }
+        #controlsElement {
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #tracksElement {
+            margin: 0 15px;
         }
     </style>
 </head>
