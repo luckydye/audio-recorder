@@ -3,11 +3,14 @@ import AudioChannel from './audio/AudioChannel.js';
 import { AudioClip } from './audio/AudioClip.js';
 import { AudioRecorder } from './audio/AudioRecorder.js';
 import AudioSource from './audio/AudioSource.js';
+import AudioStreamMeter from './components/AudioMeter.js';
+
+import './components/AudioTrack.js';
 
 const audioContext = new AudioContext();
 
 function monitorStream(stream, name, contianer) {
-    const meter = new Gyro.AudioStreamMeter(audioContext, name);
+    const meter = new AudioStreamMeter(audioContext, name);
     meter.setSourceStream(stream);
     contianer.appendChild(meter);
 }
@@ -15,6 +18,7 @@ function monitorStream(stream, name, contianer) {
 async function main() {
     // setup audiocontext
     await audioContext.audioWorklet.addModule('./audio/audio-processor.js');
+    await audioContext.audioWorklet.addModule('./audio/audio-db-meter.js');
 
     // init routing
     const source = new AudioSource(audioContext);

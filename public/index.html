@@ -9,7 +9,7 @@
             color: #eee; 
             font-family: 'Lato', sans-serif;
         }
-        audio-stream-meter {
+        audio-meter {
             padding: 10px;
             border-radius: 3px;
             background: #1c1c1c;
@@ -17,8 +17,8 @@
         }
 
         canvas {
-            display: block;
-            margin: 10px 0;
+            border-radius: 6px;
+            background: hsl(345deg 53% 41%);
         }
         main {
             position: absolute;
@@ -58,9 +58,6 @@
             padding: 10px;
             box-sizing: border-box;
         }
-        #tracksElement {
-            margin: 0 15px;
-        }
     </style>
 </head>
 <body>
@@ -68,7 +65,11 @@
     <main>
         <div id="headerElement"></div>
         <div id="controlsElement"></div>
-        <div id="tracksElement"></div>
+        <div>
+
+            <audio-track id="tracksElement"></audio-track>
+
+        </div>
         <div id="footerElement"></div>
     </main>
 

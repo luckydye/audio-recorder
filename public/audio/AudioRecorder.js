@@ -40,10 +40,7 @@ function drawAudioBuffer(buffer, duration, sampleRate) {
     const scale = 100; // 100 pixel equals 1second of audio
 
     const canvas = document.createElement('canvas');
-    canvas.height = 200;
-
-    canvas.style.background = "grey";
-    canvas.style.borderTop = "10px solid #eee";
+    canvas.height = 120;
 
     const ctxt = canvas.getContext("2d");
     canvas.ctxt = ctxt;
@@ -59,15 +56,14 @@ function drawAudioBuffer(buffer, duration, sampleRate) {
             const yOffset = height * channel;
             const y = yOffset + (height/2);
     
-            ctxt.fillRect(0, height, canvas.width, 1);
             ctxt.moveTo(0, y);
     
             for(let i = 0; i < data.length; i+=scale) {
                 const x = i / (sampleRate / scale);
-                ctxt.lineTo(x, y + data[i] * height);
+                ctxt.lineTo(x, y + data[i] * (height));
             }
     
-            ctxt.strokeStyle = "white";
+            ctxt.strokeStyle = "rgba(255, 255, 255, 1)";
             ctxt.stroke();
         }
     }
