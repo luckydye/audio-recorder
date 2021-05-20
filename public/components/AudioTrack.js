@@ -1,4 +1,5 @@
 import { html, css, LitElement } from 'https://cdn.skypack.dev/lit-element@2.4.0';
+import AudioStreamMeterVertecal from './AudioMeterVertical.js';
 
 export default class AudioTrack extends LitElement {
 
@@ -16,18 +17,30 @@ export default class AudioTrack extends LitElement {
             .head {
                 background: grey;
                 display: grid;
-                grid-template-columns: 100px 10px;
+                grid-template-columns: 100px auto;
             }
             .track-controls {
                 padding: 8px;
             }
             .meter {
                 background: darkgrey;
+                width: auto;
             }
             .track {
 
             }
+            audio-meter-vertical {
+                height: 100%;
+                background: #1c1c1c;
+            }
         `;
+    }
+
+    constructor(audioContext, channel) {
+        super();
+
+        this.meter = new AudioStreamMeterVertecal(audioContext);
+        this.meter.setAudioSourceNode(channel.getOutputNode());
     }
 
     render() {
@@ -46,7 +59,7 @@ export default class AudioTrack extends LitElement {
                         </div>
                     </div>
                     <div class="meter">
-                        
+                        ${this.meter}
                     </div>
                 </div>
                  <div class="track">

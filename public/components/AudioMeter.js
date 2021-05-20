@@ -65,7 +65,8 @@ export default class AudioStreamMeter extends LitElement {
     }
 
     renderAudioMeter() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        const channelHeight = 2;
+        this.canvas.height = channelHeight * this.levels.length + (this.levels.length - 1);
 
         for(let channel = 0; channel < this.levels.length; channel++) {
             // eval levels
@@ -88,7 +89,6 @@ export default class AudioStreamMeter extends LitElement {
             this.peak[channel] = Math.max(...this.history[channel]);
 
             // draw everything
-            const channelHeight = 2;
             const y = channel * channelHeight + (channel);
 
             this.context.fillStyle = "#1a8e1a";
@@ -119,7 +119,6 @@ export default class AudioStreamMeter extends LitElement {
                 }
                 canvas {
                     image-rendering: pixelated;
-                    width: 100%;
                     display: block;
                     margin-bottom: 1px;
                     background: rgba(0, 0, 0, 0.25);

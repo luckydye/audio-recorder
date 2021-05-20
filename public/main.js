@@ -4,8 +4,10 @@ import { AudioClip } from './audio/AudioClip.js';
 import { AudioRecorder } from './audio/AudioRecorder.js';
 import AudioSource from './audio/AudioSource.js';
 import AudioStreamMeter from './components/AudioMeter.js';
+import './components/AudioMeterVertical.js';
 
 import './components/AudioTrack.js';
+import AudioTrack from './components/AudioTrack.js';
 
 const audioContext = new AudioContext();
 
@@ -23,6 +25,7 @@ async function main() {
     // init routing
     const source = new AudioSource(audioContext);
     const channel = new AudioChannel(audioContext);
+    const masterChannel = new AudioChannel(audioContext);
 
     const knob = new Gyro.Knob();
 
@@ -57,11 +60,22 @@ async function main() {
         recorder.stopRecord();
     }
     ui.onPlay = () => {
-        recorder.playLastBuffer();
+        recorder.playLastBuffer(masterChannel);
     }
+
+    const track = new AudioTrack(audioContext, channel);
+    track.id = "tracksElement";
+    tracksEle.appendChild(track);
+    
 
     // monitor
     monitorStream(outputStream, "Input", headerElement);
+
+    const masterStream = masterChannel.getOutputStream();
+    const masterNode = masterChannel.getOutputNode();
+    monitorStream(masterStream, "Output", headerElement);
+
+    masterNode.connect(audioContext.destination);
 }
 
 function makeUi() {

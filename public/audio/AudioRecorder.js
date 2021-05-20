@@ -144,10 +144,10 @@ export class AudioRecorder {
         this.currClip.update(chunkBuffer, this.currentRecTime);
         this.currClip = null;
 
-        this.playLastBuffer = () => {
+        this.playLastBuffer = (channel) => {
             const sourceNode = this.context.createBufferSource();
             sourceNode.buffer = buffer;
-            sourceNode.connect(this.context.destination);
+            channel.setInput(sourceNode);
             sourceNode.start();
 
             sourceNode.onended = () => {
@@ -156,8 +156,8 @@ export class AudioRecorder {
         }
     }
 
-    playLastBuffer() {
-
+    playLastBuffer(channel) {
+        
     }
     
 }
