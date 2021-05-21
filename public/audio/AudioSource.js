@@ -1,14 +1,16 @@
 import AudioUtils from "./AudioUtils.js";
 
-export default class AudioSource {
+export default class AudioSource extends EventTarget {
 
     constructor(audioContext) {
+        super();
         if(!audioContext)
             throw new Error('Missing audio context.');
             
         this.context = audioContext;
         this.gain = this.context.createGain();
         this.stream = null;
+        this.currentSource = null;
     }
 
     connect(output) {
@@ -21,6 +23,7 @@ export default class AudioSource {
 
     setGain(val = 0) {
         this.gain.gain.setValueAtTime(val, this.context.currentTime + 0.01);
+        this.dispatchEvent(new Event('change'));
     }
 
     getGain() {
@@ -29,12 +32,22 @@ export default class AudioSource {
 
     setInputStream(stream) {
         this.stream = stream;
-        const audioSource = this.context.createMediaStreamSource(stream);
-        audioSource.connect(this.gain);
+        if(this.currentSource) {
+            this.currentSource.disconnect();
+        }
+        this.currentSource = this.context.createMediaStreamSource(stream);
+        this.currentSource.connect(this.gain);
+        this.dispatchEvent(new Event('change'));
     }
 
     async getMedia() {
         return AudioUtils.getMicrophoneStream().then(stream => {
+            this.setInputStream(stream);
+        })
+    }
+
+    async setInputDevice(deviceId) {
+        return AudioUtils.getDeviceStream(deviceId).then(stream => {
             this.setInputStream(stream);
         })
     }

@@ -14,6 +14,14 @@ export default class AudioChannel {
         this.input = null;
     }
 
+    setGain(val = 0) {
+        this.gain.gain.setValueAtTime(val, this.context.currentTime + 0.01);
+    }
+
+    getGain() {
+        return this.gain.gain.value;
+    }
+
     setInput(source) {
         this.input = source;
         this.input.connect(this.gain);

@@ -8,7 +8,11 @@ export default class AudioUtils {
                     if(devices[device.kind] == undefined) {
                         devices[device.kind] = [];
                     }
-                    devices[device.kind].push(device);
+                    if (device.deviceId != "default" && 
+                        device.deviceId != "communications" ) {
+
+                        devices[device.kind].push(device);
+                    }
                 }
                 return devices;
             }).catch(console.error);
@@ -29,11 +33,11 @@ export default class AudioUtils {
         });
     }
 
-    static async getDeviceStream(device) {
-        console.log('Getting media:', device.deviceId);
+    static async getDeviceStream(deviceId) {
+        console.log('Getting media:', deviceId);
         return navigator.mediaDevices.getUserMedia({
             audio: {
-                deviceId: device.deviceId,
+                deviceId: deviceId,
                 sampleSize: 24,
                 sampleRate: 48000,
                 noiseSuppression: false,
