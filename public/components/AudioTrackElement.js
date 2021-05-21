@@ -45,7 +45,8 @@ export default class AudioTrackElement extends LitElement {
                 width: auto;
             }
             .track {
-
+                display: flex;
+                align-items: center;
             }
             audio-meter-vertical {
                 height: 100%;
@@ -56,6 +57,11 @@ export default class AudioTrackElement extends LitElement {
                 width: 100%;
                 padding: 5px 8px;
                 background: #5c5c5c;
+            }
+            slot {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
             }
         `;
     }
