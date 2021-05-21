@@ -1,7 +1,7 @@
 import { html, css, LitElement } from 'https://cdn.skypack.dev/lit-element@2.4.0';
 import AudioStreamMeterVertecal from './AudioMeterVertical.js';
 
-export default class AudioTrack extends LitElement {
+export default class AudioTrackElement extends LitElement {
 
     static get styles() {
         return css`
@@ -71,4 +71,4 @@ export default class AudioTrack extends LitElement {
 
 }
 
-customElements.define('audio-track', AudioTrack);
+customElements.define('audio-track', AudioTrackElement);

@@ -12,6 +12,10 @@ export class AudioTrack {
         this.channel.setInput(this.audioSource);
     }
 
+    async loadInputSource() {
+        return this.audioSource.getMedia();
+    }
+
     getOutputNode() {
         return this.channel.getOutputNode();
     }

@@ -1,3 +1,4 @@
+import { html, LitElement } from 'https://cdn.skypack.dev/lit-element@2.4.0';
 import AudioStreamMeter from "./AudioMeter.js";
 
 export default class AudioStreamMeterVertecal extends AudioStreamMeter {
@@ -45,6 +46,31 @@ export default class AudioStreamMeterVertecal extends AudioStreamMeter {
         }
 
         this.update();
+    }
+
+    render() {
+        return html`
+            <style>
+                :host {
+                    display: block;
+                }
+                .name {
+                    margin-bottom: 10px;
+                }
+                canvas {
+                    image-rendering: pixelated;
+                    display: block;
+                    margin-bottom: 1px;
+                    background: rgba(0, 0, 0, 0.25);
+                    height: 100%;
+                    width: 5px;
+                }
+            </style>
+            ${this.name ? html`
+                <div class="name">${this.name}</div>
+            ` : ""}
+            ${this.canvas}
+        `;
     }
 
 }

@@ -1,4 +1,4 @@
-export class AduioTrackMixer {
+export class AudioTrackMixer {
 
     constructor(audioContext) {
         this.context = audioContext;
@@ -23,9 +23,9 @@ export class AduioTrackMixer {
         return this.destination.stream;
     }
 
-    getOutputNode() {
+    getOutputNode(audioContext) {
         const stream = this.getOutputStream();
-        const outputNode = this.audioContext.createMediaStreamSource(stream);
+        const outputNode = audioContext.createMediaStreamSource(stream);
         return outputNode;
     }
 

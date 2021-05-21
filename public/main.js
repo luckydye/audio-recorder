@@ -3,11 +3,12 @@ import AudioChannel from './audio/AudioChannel.js';
 import { AudioClip } from './audio/AudioClip.js';
 import { AudioRecorder } from './audio/AudioRecorder.js';
 import AudioSource from './audio/AudioSource.js';
+import { AudioTrack } from './audio/AudioTrack.js';
+import { AudioTrackMixer } from './audio/AudioTrackMixer.js';
 import AudioStreamMeter from './components/AudioMeter.js';
 import './components/AudioMeterVertical.js';
-
-import './components/AudioTrack.js';
-import AudioTrack from './components/AudioTrack.js';
+import AudioTrackElement from './components/AudioTrackElement.js';
+import PlaybackControls from './components/PlaybackControls.js';
 
 const audioContext = new AudioContext();
 
@@ -21,6 +22,19 @@ async function main() {
     // setup audiocontext
     await audioContext.audioWorklet.addModule('./audio/audio-processor.js');
     await audioContext.audioWorklet.addModule('./audio/audio-db-meter.js');
+
+    //new routing
+    const mixer = new AudioTrackMixer(audioContext);
+
+    const track1 = new AudioTrack(audioContext);
+    track1.loadInputSource();
+    mixer.addTrack(track1);
+
+    const track2 = new AudioTrack(audioContext);
+    track2.loadInputSource();
+    mixer.addTrack(track2);
+
+    const mixStream = mixer.getOutputStream();
 
     // init routing
     const source = new AudioSource(audioContext);
@@ -65,7 +79,7 @@ async function main() {
         recorder.playLastBuffer(masterChannel);
     }
 
-    const track = new AudioTrack(audioContext, channel);
+    const track = new AudioTrackElement(audioContext, channel);
     track.id = "tracksElement";
     tracksEle.appendChild(track);
     
@@ -77,17 +91,13 @@ async function main() {
     const masterNode = masterChannel.getOutputNode();
     monitorStream(masterStream, "Output", headerElement);
 
+    monitorStream(mixStream, "Master Mix", headerElement);
+
     masterNode.connect(audioContext.destination);
 }
 
 function makeUi() {
-    const stopBtn = document.createElement('button');
-    const startBtn = document.createElement('button');
-    const playBtn = document.createElement('button');
-
-    startBtn.innerHTML = "Record";
-    stopBtn.innerHTML = "Stop";
-    playBtn.innerHTML = `Play`;
+    const controls = new PlaybackControls();
 
     const callbacks = {
         onStart() { },
@@ -95,19 +105,20 @@ function makeUi() {
         onPlay() { }
     }
 
-    controlsElement.appendChild(stopBtn);
-    controlsElement.appendChild(startBtn);
-    controlsElement.appendChild(playBtn);
+    controlsElement.appendChild(controls);
 
-    stopBtn.onclick = () => {
-        callbacks.onStop();
-    }
-    startBtn.onclick = () => {
-        callbacks.onStart();
-    }
-    playBtn.onclick = () => {
+    controls.addEventListener('play', e => {
         callbacks.onPlay();
-    }
+    })
+    controls.addEventListener('startrecord', e => {
+        callbacks.onStart();
+    })
+    controls.addEventListener('stoprecord', e => {
+        callbacks.onStop();
+    })
+    controls.addEventListener('stop', e => {
+        callbacks.onStop();
+    })
 
     return callbacks;
 }
