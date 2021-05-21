@@ -24,7 +24,9 @@ async function main() {
 
     // init routing
     const source = new AudioSource(audioContext);
+    
     const channel = new AudioChannel(audioContext);
+
     const masterChannel = new AudioChannel(audioContext);
 
     const knob = new Gyro.Knob();

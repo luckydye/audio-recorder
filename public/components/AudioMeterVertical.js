@@ -4,7 +4,7 @@ export default class AudioStreamMeterVertecal extends AudioStreamMeter {
 
     renderAudioMeter() {
         const channelHeight = 2;
-        this.canvas.height = this.clientHeight - 1;
+        this.canvas.height = 100;
         this.canvas.width = channelHeight * this.levels.length + (this.levels.length - 1);
 
         for(let channel = 0; channel < this.levels.length; channel++) {

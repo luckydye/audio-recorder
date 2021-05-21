@@ -40,7 +40,7 @@ function drawAudioBuffer(buffer, duration, sampleRate) {
     const scale = 100; // 100 pixel equals 1second of audio
 
     const canvas = document.createElement('canvas');
-    canvas.height = 120;
+    canvas.height = 100;
 
     const ctxt = canvas.getContext("2d");
     canvas.ctxt = ctxt;
