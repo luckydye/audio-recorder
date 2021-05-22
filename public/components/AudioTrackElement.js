@@ -57,6 +57,7 @@ export default class AudioTrackElement extends LitElement {
                 width: 100%;
                 padding: 5px 8px;
                 background: #5c5c5c;
+                font-size: 11px;
             }
             slot {
                 display: flex;
