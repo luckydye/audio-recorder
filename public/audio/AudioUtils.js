@@ -12,6 +12,8 @@ export default class AudioUtils {
                         device.deviceId != "communications" ) {
 
                         devices[device.kind].push(device);
+                    } else {
+                        devices[device.kind][device.deviceId] = device;
                     }
                 }
                 return devices;

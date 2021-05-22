@@ -92,16 +92,39 @@ async function main() {
     const masterNode = masterChannel.getOutputNode();
     monitorStream(masterStream, "Output", headerElement);
 
-    masterNode.connect(audioContext.destination);
+    // masterNode.connect(audioContext.destination);
+    const audio = new Audio();
+    audio.srcObject = masterStream;
+    audio.play();
 
-    // devices
+    // devices / output device selector
     const devices = await AudioUtils.getAudioDevies();
-    const audioInputDevices = devices.audioinput;
+    const audioOutputDevices = devices.audiooutput;
 
-    console.log('Available Devices:');
-    audioInputDevices.forEach((dev, i) => {
+    console.log('Available Output Devices:');
+    audioOutputDevices.forEach((dev, i) => {
         console.log(i.toString(), '|', dev.label, '-', dev.deviceId);
     });
+
+    const device = audioOutputDevices[0];
+
+    const deviceDropdown = new DropdownButton();
+    deviceDropdown.options = audioOutputDevices.map(dev => {
+        return {
+            name: dev.label,
+            deviceId: dev.deviceId,
+        }
+    })
+    deviceDropdown.value = {
+        name: audioOutputDevices.default.label,
+        deviceId: audioOutputDevices.default.deviceId,
+    };
+    deviceDropdown.addEventListener('change', e => {
+        console.log('Output to:', deviceDropdown.value.deviceId);
+        audio.setSinkId(deviceDropdown.value.deviceId);
+    })
+
+    controlsElement.appendChild(deviceDropdown);
 }
 
 function makeUi() {

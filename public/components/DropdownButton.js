@@ -131,6 +131,7 @@ export default class DropdownButton extends HTMLElement {
 
 	set value(val) {
 		this.props.value = val;
+		this.render();
 	}
 
 	get options() {
@@ -139,7 +140,9 @@ export default class DropdownButton extends HTMLElement {
 
 	set options(arr) {
 		this.props.options = arr;
+		this.dispatchEvent(new Event('change'));
 		this.render();
+		this.blur();
 	}
 
 	constructor(props = {}) {
@@ -148,6 +151,7 @@ export default class DropdownButton extends HTMLElement {
         this.props = props;
 
 		this.props.onSelect = opt => {
+			console.log(opt);
 			this.value = opt;
 			this.dispatchEvent(new Event('change'));
 			this.render();

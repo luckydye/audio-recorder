@@ -11,6 +11,8 @@ export default class Timeline extends LitElement {
                 width: 100%;
                 height: auto;
                 min-height: 100%;
+                user-select: none;
+                -webkit-user-drag: none;
             }
             .container {
 
@@ -114,32 +116,38 @@ export default class Timeline extends LitElement {
             }
         })
         this.addEventListener('mousedown', e => {
-            timeline.selection[0][0] = Math.floor((e.y - 30) / gblobalScale);
-            timeline.selection[0][1] = Math.min(Math.floor((e.y - 30) / gblobalScale), trackCount - 1);
-            timeline.selection[1][0] = (e.x - timeline.scrollX) / gblobalScale;
-            timeline.selection[1][1] = (e.x - timeline.scrollX) / gblobalScale;
+            const mouseX = e.x - this.getClientRects()[0].x;
+            const mouseY = e.y - this.getClientRects()[0].y;
+            timeline.selection[0][0] = Math.floor((mouseY - 30) / gblobalScale);
+            timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
+            timeline.selection[1][0] = (mouseX - timeline.scrollX) / gblobalScale;
+            timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
             mousedown = true;
         })
         this.addEventListener('mouseup', e => {
+            const mouseX = e.x - this.getClientRects()[0].x;
+            const mouseY = e.y - this.getClientRects()[0].y;
             if(!dragging) {
-                timeline.time = (e.x - timeline.scrollX);
+                timeline.time = (mouseX - timeline.scrollX);
             }
 
-            timeline.selection[0][1] = Math.min(Math.floor((e.y - 30) / gblobalScale), trackCount - 1);
-            timeline.selection[1][1] = (e.x - timeline.scrollX) / gblobalScale;
+            timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
+            timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
             dragging = false;
             mousedown = false;
 
             deltaX = 0;
         })
         window.addEventListener('mousemove', e => {
+            const mouseX = e.x - this.getClientRects()[0].x;
+            const mouseY = e.y - this.getClientRects()[0].y;
             deltaX += e.movementX;
             if(!dragging && mousedown && Math.abs(deltaX) > 1) {
                 dragging = true;
             }
             if(dragging) {
-                timeline.selection[0][1] = Math.min(Math.floor((e.y - 30) / gblobalScale), trackCount - 1);
-                timeline.selection[1][1] = (e.x - timeline.scrollX) / gblobalScale;
+                timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
+                timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
             }
         })
 
