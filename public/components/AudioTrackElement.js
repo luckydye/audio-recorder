@@ -92,6 +92,10 @@ export default class AudioTrackElement extends LitElement {
         this.knob = createControlKnob(this.track.audioSource);
         this.update();
     }
+    
+    // <div class="rec-toggle">
+    //     <toggle-button>X</toggle-button>
+    // </div>
 
     render() {
         return html`
@@ -104,9 +108,6 @@ export default class AudioTrackElement extends LitElement {
                             <div class="input-track">In Track</div>
                             <div class="input-gain">
                                 ${this.knob}
-                            </div>
-                            <div class="rec-toggle">
-                                <toggle-button>X</toggle-button>
                             </div>
                         </div>
                     </div>

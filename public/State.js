@@ -1,7 +1,10 @@
 
 const saveState = {
     timeline: {
-        time: 0,
+        scrollX: 0,
+        scrollY: 0,
+        time: 2.4 * 100,
+        selection: [[0, 0], [0, 0]],
     },
     tracks: [
         {

@@ -79,7 +79,7 @@
             border-radius: 3px;
         }
         audio-track {
-            margin: 1px 0;
+            margin: 0 0 1px 0;
             background: #1c1c1c;
         }
         .track-canvas {
@@ -89,6 +89,9 @@
         audio-timeline canvas {
             border-radius: 6px;
             transform: translateX(calc(var(--scrollX) * -1px + var(--start, 0) * 100px));
+        }
+        #tracksEle {
+            margin-top: 30px;
         }
     </style>
 </head>

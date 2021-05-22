@@ -37,7 +37,7 @@ export default class Timeline extends LitElement {
             .track {
                 position: relative;
                 width: 100%;
-                height: 150px;
+                height: 153px;
                 padding: 1px;
                 box-sizing: border-box;
             }
@@ -100,7 +100,7 @@ export default class Timeline extends LitElement {
         }
 
         const gblobalScale = 100;
-        const trackCount = 3;
+        const trackCount = 2;
 
         let mousedown = false;
         let dragging = 0;
@@ -164,7 +164,7 @@ export default class Timeline extends LitElement {
             const selection = timeline.selection;
             ctx.fillStyle = "rgba(100, 100, 100, 0.25)";
 
-            const trackHeight = 150;
+            const trackHeight = 153;
 
             const trackStart = Math.min(...selection[0]) * trackHeight;
             const trackEnd = Math.max(...selection[0]) * trackHeight;

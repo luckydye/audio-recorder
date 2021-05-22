@@ -11,6 +11,11 @@ export default class AudioSource extends EventTarget {
         this.gain = this.context.createGain();
         this.stream = null;
         this.currentSource = null;
+        this.channels = [0, 1];
+    }
+
+    setInputChannel(channel) {
+        const channels = this.currentSource.channelCount;
     }
 
     connect(output) {
