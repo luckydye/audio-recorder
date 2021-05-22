@@ -1,4 +1,5 @@
 import { html, css, LitElement } from 'https://cdn.skypack.dev/lit-element@2.4.0';
+import Timer from '../Timer.js';
 import Icons from './Icons.js';
 
 export default class PlaybackControls extends LitElement {
@@ -44,18 +45,27 @@ export default class PlaybackControls extends LitElement {
         super();
         this.playstate = 0;
         this.recordstate = 0;
+
+        Timer.on('play', e => {
+            this.playstate = 1;
+            this.update();
+        })
+        Timer.on('pause', e => {
+            this.playstate = 0;
+            this.update();
+        })
     }
 
     // Events:
     //  play
     //  pause
-    //  stop
     //  skiptostart
     //  skiptoend
     //  startrecord
     //  stoprecord
 
     render() {
+
         const playPause = e => {
             if(this.playstate === 1) {
                 this.dispatchEvent(new Event('pause'));
@@ -79,9 +89,6 @@ export default class PlaybackControls extends LitElement {
             }
             this.update();
         }
-        const stop = e => {
-            this.dispatchEvent(new Event('stop'));
-        }
         const toEnd = e => {
             this.dispatchEvent(new Event('skiptoend'));
         }
@@ -93,9 +100,6 @@ export default class PlaybackControls extends LitElement {
                 <toggle-button @click="${recordStartStop}">
                     ${Icons.record}
                 </toggle-button>
-                <button @click="${stop}">
-                    ${Icons.stop}
-                </button>
                 <toggle-button @click="${playPause}">
                     ${this.playstate == 1 ? Icons.pause : Icons.play}
                 </toggle-button>

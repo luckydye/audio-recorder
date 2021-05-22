@@ -8,7 +8,7 @@ function createControlKnob(source) {
     const knob = new Gyro.Knob();
 
     knob.min = 0;
-    knob.max = 20;
+    knob.max = 10;
     knob.steps = 0.1;
 
     knob.setValue(source.getGain());

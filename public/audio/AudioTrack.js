@@ -1,3 +1,4 @@
+import Timer from "../Timer.js";
 import AudioChannel from "./AudioChannel.js";
 import { AudioRecorder } from "./AudioRecorder.js";
 import AudioSource from "./AudioSource.js";
@@ -21,6 +22,8 @@ export class AudioTrack {
         this.clips = [];
         this.recorder.onClipCreated = clip => {
             this.clips.push(clip);
+
+            clip.startTime = Timer.time;
 
             const timeline = document.querySelector('audio-timeline');
             clip.canvas.slot = "track1";

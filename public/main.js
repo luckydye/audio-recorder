@@ -1,4 +1,5 @@
 import Gyro from 'https://dev.luckydye.de/gyro.js';
+import { Action } from './Actions.js';
 import AudioChannel from './audio/AudioChannel.js';
 import { AudioClip } from './audio/AudioClip.js';
 import { AudioRecorder } from './audio/AudioRecorder.js';
@@ -12,6 +13,20 @@ import AudioTrackElement from './components/AudioTrackElement.js';
 import DropdownButton from './components/DropdownButton.js';
 import PlaybackControls from './components/PlaybackControls.js';
 import Timeline from './components/Timeline.js';
+import Timer from './Timer.js';
+
+Action.register({
+    name: 'playPause',
+    description: 'playPause',
+    shortcut: 'space',
+    onAction(args, event, aciton) {
+        if(Timer.playing) {
+            Timer.pause();
+        } else {
+            Timer.play();
+        }
+    }
+});
 
 const audioContext = new AudioContext();
 
@@ -133,21 +148,26 @@ function makeUi() {
     const callbacks = {
         onStart() { },
         onStop() { },
-        onPlay() { }
+        onPlay() { },
+        onPause() { },
     }
 
     controlsElement.appendChild(controls);
 
     controls.addEventListener('play', e => {
+        Timer.play();
         callbacks.onPlay();
     })
+    controls.addEventListener('pause', e => {
+        Timer.pause();
+        callbacks.onPause();
+    })
     controls.addEventListener('startrecord', e => {
+        Timer.play();
         callbacks.onStart();
     })
     controls.addEventListener('stoprecord', e => {
-        callbacks.onStop();
-    })
-    controls.addEventListener('stop', e => {
+        Timer.pause();
         callbacks.onStop();
     })
 

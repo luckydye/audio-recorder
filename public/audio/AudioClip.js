@@ -35,6 +35,8 @@ export class AudioClip {
                 ctxt.strokeStyle = "rgba(255, 255, 255, 1)";
                 ctxt.stroke();
             }
+
+            canvas.style.setProperty('--startTime', this.startTime);
         }
 
         draw();

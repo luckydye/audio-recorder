@@ -1,4 +1,5 @@
 import { html, LitElement, css } from 'https://cdn.skypack.dev/lit-element@2.4.0';
+import Timer from '../Timer.js';
 
 export default class Timeline extends LitElement {
 
@@ -57,6 +58,7 @@ export default class Timeline extends LitElement {
             .track-content slot {
                 display: flex;
                 height: 100%;
+                position: relative;
             }
 
             .playhead {
@@ -99,9 +101,13 @@ export default class Timeline extends LitElement {
         const timeline = {
             scrollX: 0,
             scrollY: 0,
-            time: 2.4 * 100,
             selection: [[0, 0], [0, 0]],
         }
+
+        Timer.on('update', e => {
+            this.style.setProperty('--time', Timer.time * gblobalScale);
+            this.style.setProperty('--scrollX', -timeline.scrollX);
+        })
 
         const gblobalScale = 100;
         const trackCount = 2;
@@ -129,7 +135,7 @@ export default class Timeline extends LitElement {
             const mouseX = e.x - this.getClientRects()[0].x;
             const mouseY = e.y - this.getClientRects()[0].y;
             if(!dragging) {
-                timeline.time = (mouseX - timeline.scrollX);
+                Timer.time = (mouseX - timeline.scrollX) / gblobalScale;
             }
 
             timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
@@ -187,7 +193,7 @@ export default class Timeline extends LitElement {
                 ((trackEnd + trackHeight) - trackStart)
             );
 
-            this.style.setProperty('--time', timeline.time);
+            this.style.setProperty('--time', Timer.time * gblobalScale);
             this.style.setProperty('--scrollX', -timeline.scrollX);
 
             requestAnimationFrame(draw);
