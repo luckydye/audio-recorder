@@ -13,11 +13,21 @@ export class AudioTrack {
 
         this.audioSource = new AudioSource(this.context);
         this.channel = new AudioChannel(this.context);
+        this.channel.setInput(this.audioSource);
 
         this.recorder = new AudioRecorder(this.context);
         this.recorder.setInput(this.audioSource);
 
-        this.channel.setInput(this.audioSource);
+        this.clips = [];
+        this.recorder.onClipCreated = clip => {
+            this.clips.push(clip);
+
+            const timeline = document.querySelector('audio-timeline');
+            clip.canvas.slot = "track1";
+            timeline.appendChild(clip.canvas);
+        }
+
+        this.outputChannel = new AudioChannel(this.context);
 
         tempTrackCount++;
     }
@@ -30,8 +40,12 @@ export class AudioTrack {
         return this.audioSource.setInputDevice(deviceId);
     }
 
-    getOutputNode() {
+    getInputNode() {
         return this.channel.getOutputNode();
+    }
+
+    getOutputNode() {
+        return this.outputChannel.getOutputNode();
     }
 
 }

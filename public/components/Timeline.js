@@ -56,6 +56,7 @@ export default class Timeline extends LitElement {
 
             .track-content slot {
                 display: flex;
+                height: 100%;
             }
 
             .playhead {

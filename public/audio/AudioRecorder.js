@@ -1,3 +1,5 @@
+import { AudioClip } from "./AudioClip.js";
+
 function makeAudioBuffer(audioContext, chunks) {
     const numberOfChannels = chunks[0].length;
     const chunkSize = chunks[0][0].length;
@@ -34,50 +36,7 @@ function getLiveBuffer(audioChunks) {
 }
 
 function drawAudioBuffer(buffer, duration, sampleRate) {
-
-    const channelCount = buffer.length;
-
-    const scale = 100; // 100 pixel equals 1second of audio
-
-    const canvas = document.createElement('canvas');
-    canvas.height = 100;
-
-    const ctxt = canvas.getContext("2d");
-    canvas.ctxt = ctxt;
-
-    const draw = () => {
-        const dataLength = sampleRate * duration;
-        canvas.width = (dataLength / (sampleRate / scale));
-
-        for(let channel = 0; channel < channelCount; channel++) {
-            const data = buffer[channel];
-    
-            const height = canvas.height / channelCount;
-            const yOffset = height * channel;
-            const y = yOffset + (height/2);
-    
-            ctxt.moveTo(0, y);
-    
-            for(let i = 0; i < data.length; i+=scale) {
-                const x = i / (sampleRate / scale);
-                ctxt.lineTo(x, y + data[i] * (height));
-            }
-    
-            ctxt.strokeStyle = "rgba(255, 255, 255, 1)";
-            ctxt.stroke();
-        }
-    }
-
-    draw();
-
-    return {
-        canvas,
-        update: (newBuffer, currDuration) => {
-            buffer = newBuffer;
-            duration = currDuration;
-            draw();
-        }
-    };
+    return new AudioClip(buffer, duration, sampleRate);
 }
 
 export class AudioRecorder {
@@ -86,7 +45,6 @@ export class AudioRecorder {
         this.context = audioContext;
         this.currentRecTime = 0;
         this.recording = false;
-        this.audioChunks = [];
         this.audioProcessor = new AudioWorkletNode(this.context, 'audio-processor');
         this.startRecordTs = 0;
         this.currClip = null;
@@ -124,18 +82,28 @@ export class AudioRecorder {
         this.audioProcessor.disconnect();
     }
 
+    get audioChunks() {
+        return this.currClip.data;
+    }
+
+    set audioChunks(val) {
+        this.currClip.data = val;
+    }
+
     startRecord() {
-        this.audioChunks = [];
         this.currentRecTime = 0;
         this.startRecordTs = this.context.currentTime;
         this.recording = true;
 
-        const chunkBuffer = getLiveBuffer(this.audioChunks);
-        this.currClip = drawAudioBuffer(chunkBuffer, this.currentRecTime, this.context.sampleRate);
+        const chunkBuffer = getLiveBuffer([]);
+        const clip = drawAudioBuffer(chunkBuffer, this.currentRecTime, this.context.sampleRate);
+        this.currClip = clip;
 
-        const timeline = document.querySelector('audio-timeline');
-        this.currClip.canvas.slot = "track1";
-        timeline.appendChild(this.currClip.canvas);
+        this.onClipCreated(clip);
+    }
+
+    onClipCreated(clip) {
+        // callback
     }
 
     stopRecord() {

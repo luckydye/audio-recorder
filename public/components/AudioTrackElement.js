@@ -31,6 +31,8 @@ export default class AudioTrackElement extends LitElement {
             .track-container {
                 display: grid;
                 grid-template-columns: auto;
+                height: 151px;
+                border-bottom: 1px solid rgb(49 49 49);
             }
             .head {
                 background: #272727;
@@ -39,6 +41,9 @@ export default class AudioTrackElement extends LitElement {
             }
             .track-controls {
                 padding: 8px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
             }
             .meter {
                 background: darkgrey;
@@ -52,8 +57,15 @@ export default class AudioTrackElement extends LitElement {
                 box-sizing: border-box;
                 width: 100%;
                 padding: 5px 8px;
-                background: #333;
+                background: rgb(51, 51, 51);
                 font-size: 11px;
+                border-bottom: 1px solid rgb(61, 61, 61);
+                display: flex;
+                align-items: center;
+            }
+            .track-body {
+                display: grid;
+                grid-template-rows: 25px 1fr;
             }
         `;
     }
@@ -63,7 +75,7 @@ export default class AudioTrackElement extends LitElement {
 
         this.track = track;
         this.meter = new AudioStreamMeterVertecal(audioContext);
-        this.meter.setAudioSourceNode(this.track.getOutputNode());
+        this.meter.setAudioSourceNode(this.track.getInputNode());
 
         this.initDeviceSelect();
     }
@@ -101,11 +113,10 @@ export default class AudioTrackElement extends LitElement {
         return html`
             <div class="track-container">
                 <div class="head">
-                    <div>
+                    <div class="track-body">
                         <div class="label">${this.track.name}</div>
                         <div class="track-controls">
                             ${this.deopdown}
-                            <div class="input-track">In Track</div>
                             <div class="input-gain">
                                 ${this.knob}
                             </div>
