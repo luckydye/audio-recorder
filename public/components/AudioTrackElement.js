@@ -33,7 +33,7 @@ export default class AudioTrackElement extends LitElement {
                 grid-template-columns: auto;
             }
             .head {
-                background: grey;
+                background: #272727;
                 display: grid;
                 grid-template-columns: 150px auto;
             }
@@ -52,7 +52,7 @@ export default class AudioTrackElement extends LitElement {
                 box-sizing: border-box;
                 width: 100%;
                 padding: 5px 8px;
-                background: #5c5c5c;
+                background: #333;
                 font-size: 11px;
             }
         `;
