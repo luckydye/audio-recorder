@@ -10,6 +10,7 @@ export default class Timeline extends LitElement {
                 position: relative;
                 width: 100%;
                 height: auto;
+                min-height: 100%;
             }
             .container {
 
