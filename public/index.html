@@ -7,7 +7,7 @@
     <script src="./main.js" type="module"></script>
     <style>
         body { 
-            background: #0c0c0c; 
+            background: #181818; 
             color: #eee; 
             font-family: 'Lato', sans-serif;
         }
@@ -82,6 +82,14 @@
             margin: 1px 0;
             background: #1c1c1c;
         }
+        .track-canvas {
+            display: grid;
+            grid-template-columns: auto 1fr;
+        }
+        audio-timeline canvas {
+            border-radius: 6px;
+            transform: translateX(calc(var(--scrollX) * -1px + var(--start, 0) * 100px));
+        }
     </style>
 </head>
 <body>
@@ -90,8 +98,11 @@
         <div class="controls">
             <div id="controlsElement"></div>
         </div>
-        <div id="tracksEle">
-            
+        <div class="track-canvas">
+            <div id="tracksEle"></div>
+            <div class="timeline">
+                <audio-timeline></audio-timeline>
+            </div>
         </div>
         <div id="footerElement"></div>
         <div id="headerElement"></div>

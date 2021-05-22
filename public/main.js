@@ -11,6 +11,7 @@ import './components/AudioMeterVertical.js';
 import AudioTrackElement from './components/AudioTrackElement.js';
 import DropdownButton from './components/DropdownButton.js';
 import PlaybackControls from './components/PlaybackControls.js';
+import Timeline from './components/Timeline.js';
 
 const audioContext = new AudioContext();
 

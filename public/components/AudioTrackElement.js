@@ -30,7 +30,7 @@ export default class AudioTrackElement extends LitElement {
             }
             .track-container {
                 display: grid;
-                grid-template-columns: auto 1fr;
+                grid-template-columns: auto;
             }
             .head {
                 background: grey;
@@ -44,10 +44,6 @@ export default class AudioTrackElement extends LitElement {
                 background: darkgrey;
                 width: auto;
             }
-            .track {
-                display: flex;
-                align-items: center;
-            }
             audio-meter-vertical {
                 height: 100%;
                 background: #1c1c1c;
@@ -58,11 +54,6 @@ export default class AudioTrackElement extends LitElement {
                 padding: 5px 8px;
                 background: #5c5c5c;
                 font-size: 11px;
-            }
-            slot {
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
             }
         `;
     }
@@ -123,9 +114,6 @@ export default class AudioTrackElement extends LitElement {
                         ${this.meter}
                     </div>
                 </div>
-                 <div class="track">
-                    <slot></slot>
-                 </div>
             </div>
         `;
     }

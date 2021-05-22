@@ -9,7 +9,7 @@ export default class Timeline extends LitElement {
                 overflow: hidden;
                 position: relative;
                 width: 100%;
-                height: 100vh;
+                height: auto;
             }
             .container {
 
@@ -19,6 +19,9 @@ export default class Timeline extends LitElement {
                 position: absolute;
                 top: 0;
                 left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
             }
     
             canvas {
@@ -26,16 +29,15 @@ export default class Timeline extends LitElement {
             }
     
             .tracks {
-                position: absolute;
-                top: 0;
-                left: 0;
                 width: 100%;
-                padding: 30px 0 0 0;
+                padding: 30px 0 30px 0;
+                z-index: 10;
             }
     
             .track {
+                position: relative;
                 width: 100%;
-                height: 100px;
+                height: 150px;
                 padding: 1px;
                 box-sizing: border-box;
             }
@@ -49,6 +51,10 @@ export default class Timeline extends LitElement {
                 background: rgba(255, 255, 255, 0.05);
             }
 
+            .track-content slot {
+                display: flex;
+            }
+
             .playhead {
                 position: absolute;
                 top: 0px;
@@ -57,8 +63,16 @@ export default class Timeline extends LitElement {
                 width: 1px;
                 background: white;
                 pointer-events: none;
+                z-index: 100;
             }
         `;
+    }
+
+    resize() {
+        this.canvas.width = this.clientWidth;
+        this.canvas.height = this.clientHeight;
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
     }
 
     constructor() {
@@ -69,14 +83,11 @@ export default class Timeline extends LitElement {
         backgroundCanvas.width = this.clientWidth;
         backgroundCanvas.height = this.clientHeight;
 
-        let width = backgroundCanvas.width;
-        let height = backgroundCanvas.height;
+        this.width = backgroundCanvas.width;
+        this.height = backgroundCanvas.height;
 
         window.addEventListener('resize', e => {
-            backgroundCanvas.width = this.clientWidth;
-            backgroundCanvas.height = this.clientHeight;
-            width = backgroundCanvas.width;
-            height = backgroundCanvas.height;
+            this.resize();
         })
 
         const ctx = backgroundCanvas.getContext("2d");
@@ -108,7 +119,7 @@ export default class Timeline extends LitElement {
             timeline.selection[1][1] = (e.x - timeline.scrollX) / gblobalScale;
             mousedown = true;
         })
-        window.addEventListener('mouseup', e => {
+        this.addEventListener('mouseup', e => {
             if(!dragging) {
                 timeline.time = (e.x - timeline.scrollX);
             }
@@ -132,7 +143,7 @@ export default class Timeline extends LitElement {
         })
 
         const draw = () => {
-            ctx.clearRect(0, 0, width, height);
+            ctx.clearRect(0, 0, this.width, this.height);
             ctx.fillStyle = "#1c1c1c";
             ctx.font = "9px Arial";
             ctx.textAlign = "center";
@@ -144,7 +155,7 @@ export default class Timeline extends LitElement {
                     ctx.fillStyle = "grey";
                     ctx.fillText(second, x, 15);
                     ctx.fillStyle = "#1c1c1c";
-                    ctx.fillRect(x, 20, 1, height);
+                    ctx.fillRect(x, 20, 1, this.height);
                 }
 
                 second++;
@@ -153,15 +164,17 @@ export default class Timeline extends LitElement {
             const selection = timeline.selection;
             ctx.fillStyle = "rgba(100, 100, 100, 0.25)";
 
-            const trackStart = Math.min(...selection[0]) * gblobalScale;
-            const trackEnd = Math.max(...selection[0]) * gblobalScale;
+            const trackHeight = 150;
+
+            const trackStart = Math.min(...selection[0]) * trackHeight;
+            const trackEnd = Math.max(...selection[0]) * trackHeight;
             const start = selection[1][0] * gblobalScale;
             const end = selection[1][1] * gblobalScale;
             ctx.fillRect(
                 start + timeline.scrollX, 
                 trackStart + 30, 
                 end - start, 
-                ((trackEnd + 100) - trackStart)
+                ((trackEnd + trackHeight) - trackStart)
             );
 
             this.style.setProperty('--time', timeline.time);
@@ -173,6 +186,11 @@ export default class Timeline extends LitElement {
         }
 
         draw();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        requestAnimationFrame(this.resize.bind(this));
     }
 
     render() {
@@ -190,11 +208,6 @@ export default class Timeline extends LitElement {
                     <div class="track">
                         <div class="track-content">
                             <slot name="track2"></slot>
-                        </div>
-                    </div>
-                    <div class="track">
-                        <div class="track-content">
-                            <slot name="track3"></slot>
                         </div>
                     </div>
                 </div>

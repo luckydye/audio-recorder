@@ -132,7 +132,10 @@ export class AudioRecorder {
 
         const chunkBuffer = getLiveBuffer(this.audioChunks);
         this.currClip = drawAudioBuffer(chunkBuffer, this.currentRecTime, this.context.sampleRate);
-        tracksElement.appendChild(this.currClip.canvas);
+
+        const timeline = document.querySelector('audio-timeline');
+        this.currClip.canvas.slot = "track1";
+        timeline.appendChild(this.currClip.canvas);
     }
 
     stopRecord() {
