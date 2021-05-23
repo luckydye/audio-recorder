@@ -57,14 +57,17 @@ const tracks = [
     {
         name: 'Track 1',
         inputDevice: 'f4e4dffa447be44f7557a78785415c2061d06c99472a1a1dfe8b128faed078d3',
+        armed: true,
     },
     {
         name: 'Track 2',
         inputDevice: '157bb2c4c2fa454a88354d046bfc2808b573f57733f94df7352b371d3b91fa87',
+        armed: true,
     },
     {
         name: 'Track 3',
         inputDevice: '157bb2c4c2fa454a88354d046bfc2808b573f57733f94df7352b371d3b91fa87',
+        armed: false,
     }
 ]
 
@@ -72,6 +75,7 @@ function loadMixerTracks(audioContext, mixer, jsonTracks) {
     for(let jsonTrack of jsonTracks) {
         const track1 = new AudioTrack(audioContext);
         track1.name = jsonTrack.name;
+        track1.armed = jsonTrack.armed;
         mixer.addTrack(track1);
     
         const track = new AudioTrackElement(audioContext, track1);
@@ -83,7 +87,7 @@ function loadMixerTracks(audioContext, mixer, jsonTracks) {
 
 async function main() {
     // setup audiocontext
-    await audioContext.audioWorklet.addModule('./audio/audio-processor.js');
+    await audioContext.audioWorklet.addModule('./audio/audio-proxy.js');
     await audioContext.audioWorklet.addModule('./audio/audio-db-meter.js');
     await audioContext.audioWorklet.addModule('./audio/audio-composer.js');
 
@@ -103,10 +107,16 @@ async function main() {
 
     const ui = makeUi();
     ui.onStart = () => {
-        mixer.getTrack(0).recorder.startRecord();
+        const armedTracks = mixer.getTracks().filter(track => track.armed);
+        for(let track of armedTracks) {
+            track.recorder.startRecord();
+        }
     }
     ui.onStop = () => {
-        mixer.getTrack(0).recorder.stopRecord();
+        const armedTracks = mixer.getTracks().filter(track => track.armed);
+        for(let track of armedTracks) {
+            track.recorder.stopRecord();
+        }
     }
 
     // monitor

@@ -1,5 +1,5 @@
 // audio-processor.js
-class AudioProcessor extends AudioWorkletProcessor {
+class AudioProxy extends AudioWorkletProcessor {
     process(inputs, outputs, parameters) {
         // console.log(inputs);
         // const output = outputs[0]
@@ -15,4 +15,4 @@ class AudioProcessor extends AudioWorkletProcessor {
     }
 }
 
-registerProcessor('audio-processor', AudioProcessor);
+registerProcessor('audio-proxy', AudioProxy);

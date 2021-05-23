@@ -11,6 +11,10 @@ export class AudioTrackMixer {
         return [...this.tracks][index];
     }
 
+    getTracks() {
+        return [...this.tracks];
+    }
+
     addTrack(track) {
         const outputNode = track.getOutputNode();
         outputNode.connect(this.destination);

@@ -45,7 +45,7 @@ export class AudioRecorder {
         this.context = audioContext;
         this.currentRecTime = 0;
         this.recording = false;
-        this.audioProcessor = new AudioWorkletNode(this.context, 'audio-processor');
+        this.audioProcessor = new AudioWorkletNode(this.context, 'audio-proxy');
         this.startRecordTs = 0;
         this.currClip = null;
 

@@ -7,6 +7,10 @@ let tempTrackCount = 0;
 
 export class AudioTrack {
 
+    get id() {
+        return this.name.toLocaleLowerCase().replace(" ", "");
+    }
+
     constructor(audioContext) {
         this.name = "Track " + tempTrackCount;
 
@@ -16,6 +20,7 @@ export class AudioTrack {
         this.channel = new AudioChannel(this.context);
         this.channel.setInput(this.audioSource);
 
+        this.armed = false;
         this.recorder = new AudioRecorder(this.context);
         this.recorder.setInput(this.audioSource);
 
@@ -26,7 +31,7 @@ export class AudioTrack {
             clip.startTime = Timer.time;
 
             const timeline = document.querySelector('audio-timeline');
-            clip.canvas.slot = "track1";
+            clip.canvas.slot = this.id;
             timeline.appendChild(clip.canvas);
         }
 
@@ -56,7 +61,8 @@ export class AudioTrack {
             const buffers = this.getBuffersAt(Timer.time, 4);
             const buffer = buffers.buffers;
             const index = buffers.index;
-
+                
+            // stream the realtime audio to the worklet
             if(Timer.playing) {
                 this.audioComposer.port.postMessage(buffer);
             } else {
