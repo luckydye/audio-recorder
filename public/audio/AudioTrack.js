@@ -33,16 +33,8 @@ export class AudioTrack {
         this.outputChannel = new AudioChannel(this.context);
 
         tempTrackCount++;
-        
-        const outputBuffer = this.context.createBuffer(2, 128, this.context.sampleRate);
 
-        // whtie noise for testing
-        // for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
-        //     var nowBuffering = outputBuffer.getChannelData(channel);
-        //     for (var i = 0; i < outputBuffer.length; i++) {
-        //         nowBuffering[i] = (Math.random() * 2 - 1) * 0.01;
-        //     }
-        // }
+        const outputBuffer = this.context.createBuffer(2, 128, this.context.sampleRate);
 
         let elapsedTime = 0;
         let lastTick = 0;
@@ -57,16 +49,19 @@ export class AudioTrack {
         });
 
         Timer.on('update', e => {
-            if(!lastTick)
+            if (!lastTick)
                 return;
 
             const deltaTime = (performance.now() - lastTick) / 1000;
-            const buffer = this.getBufferAt(Timer.time);
+            const buffers = this.getBuffersAt(Timer.time, 4);
+            const buffer = buffers.buffers;
+            const index = buffers.index;
 
-            const bufferTime = (128 / this.context.sampleRate); // fraction of second per sample
-            const tickTime = deltaTime; // ticktime cant be higher then the buffertime
-
-            this.audioComposer.port.postMessage(buffer);
+            if(Timer.playing) {
+                this.audioComposer.port.postMessage(buffer);
+            } else {
+                this.audioComposer.port.postMessage(null);
+            } 
 
             elapsedTime += deltaTime;
             lastTick = performance.now();
@@ -74,11 +69,42 @@ export class AudioTrack {
 
         this.audioComposer = new AudioWorkletNode(this.context, 'audio-composer');
         this.outputChannel.setInput(this.audioComposer);
+
+        this.audioComposer.port.onmessage = msg => {
+            window.portmsg = msg.data;
+        }
+    }
+
+    playBuffer(chunkBuffer) {
+        if (chunkBuffer) {
+            const sampleRate = this.context.sampleRate;
+            const bufferLength = (chunkBuffer.length * 128) / sampleRate;
+            const audioBuffer = this.context.createBuffer(2, sampleRate * bufferLength, sampleRate);
+
+            for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+                const channelBuffer = audioBuffer.getChannelData(channel);
+                for (let i = 0; i < audioBuffer.length; i++) {
+
+                    const bufferIndex = Math.floor(i / 128);
+                    const sampleIndex = i - (bufferIndex * 128);
+
+                    channelBuffer[i] = chunkBuffer[bufferIndex][channel][sampleIndex];
+                }
+            }
+
+            const sourceNode = this.context.createBufferSource();
+            sourceNode.buffer = audioBuffer;
+            this.outputChannel.setInput(sourceNode);
+            sourceNode.start();
+            sourceNode.onended = () => {
+                sourceNode.disconnect();
+            }
+        }
     }
 
     getClipAt(second) {
         let currentClip = null;
-        for(let clip of this.clips) {
+        for (let clip of this.clips) {
             if (clip.startTime < second &&
                 clip.startTime + clip.length >= second) {
                 currentClip = clip;
@@ -87,15 +113,22 @@ export class AudioTrack {
         return currentClip;
     }
 
-    getBufferAt(second) {
+    getBuffersAt(second, size = 1, offset = 0) {
         let currentClip = this.getClipAt(second);
-        if(currentClip) {
+        if (currentClip) {
             const timeOffset = second - currentClip.startTime;
             const dataIndex = Math.floor((timeOffset / currentClip.length) * currentClip.data.length);
-            const dataBlock = currentClip.data.slice(dataIndex, dataIndex + 4);
-            return dataBlock;
+            const dataBlock = currentClip.data.slice(
+                (dataIndex + offset), 
+                (dataIndex + offset) + size
+            );
+
+            return {
+                index: (dataIndex + offset),
+                buffers: dataBlock,
+            };
         }
-        return null;
+        return {};
     }
 
     async loadInputSource() {

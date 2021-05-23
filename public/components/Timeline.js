@@ -120,6 +120,11 @@ export default class Timeline extends LitElement {
             selection: [[0, 0], [0, 0]],
         }
 
+        this.pointer = {
+            x: 0,
+            y: 0,
+        }
+
         const gblobalScale = 100;
         const trackCount = 2;
 
@@ -166,6 +171,9 @@ export default class Timeline extends LitElement {
                 timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
                 timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
             }
+
+            this.pointer.x = mouseX;
+            this.pointer.y = mouseY;
         })
 
         const draw = () => {
@@ -215,6 +223,9 @@ export default class Timeline extends LitElement {
                 1,
                 ((trackEnd + trackHeight) - trackStart)
             );
+
+            ctx.fillStyle = "rgba(100, 100, 100, 0.33)";
+            ctx.fillRect(this.pointer.x, 0, 2, 20);
 
             this.style.setProperty('--time', Timer.time * gblobalScale);
             this.style.setProperty('--scrollX', -timeline.scrollX);

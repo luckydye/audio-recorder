@@ -5,10 +5,15 @@ class AudioComposer extends AudioWorkletProcessor {
     constructor() {
         super();
 
+        this.indexOffset = 0;
+
+        const dropped = [];
+
         this.port.onmessage = msg => {
             const data = msg.data;
             this.bufferDataTime = Date.now();
             this.bufferData = data;
+            this.indexOffset = 0;
         }
     }
 
@@ -18,22 +23,26 @@ class AudioComposer extends AudioWorkletProcessor {
             const bufferDataAge = (Date.now() - this.bufferDataTime) / 1000;
             const bufferSize = 128;
 
-            console.log(bufferDataAge);
-    
             const timePerBuffer = bufferSize / sampleRate;
             const bufferCountInSecond = sampleRate / bufferSize;
-    
-            const currentBufferIndex = Math.floor(bufferDataAge / timePerBuffer);
-            const currentBuffer = this.bufferData[currentBufferIndex];
+            const timeSampleOffset = bufferDataAge * sampleRate;
+            
+            const output = outputs[0];
+            output.forEach((channelData, channel) => {
+                for (let i = 0; i < channelData.length; i++) {
 
-            if(currentBuffer) {
-                const output = outputs[0];
-                output.forEach((channelData, channel) => {
-                    for (let i = 0; i < channelData.length; i++) {
-                        channelData[i] = currentBuffer[channel][i];
+                    const index = this.indexOffset + i;
+                    const bufferIndex = Math.floor(index / bufferSize);
+                    const sampleIndex = index - (bufferIndex * bufferSize);
+
+                    const buffer = this.bufferData[bufferIndex];
+                    if(buffer) {
+                        channelData[i] = buffer[channel][sampleIndex];
                     }
-                })
-            }
+                }
+
+                this.indexOffset += channelData.length;
+            })
         }
     
         return true;

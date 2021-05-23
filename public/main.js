@@ -91,7 +91,7 @@ async function main() {
         track1.recorder.stopRecord();
     }
     ui.onPlay = () => {
-        track1.recorder.playLastBuffer(masterChannel);
+        
     }
 
     const track = new AudioTrackElement(audioContext, track1);

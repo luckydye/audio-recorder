@@ -26,6 +26,7 @@ export default class Timer {
         state.playing = false;
         console.log('pause');
         eventTarget.dispatchEvent(new Event('pause'));
+        Timer.emit('update');
     }
 
     static get playing() {

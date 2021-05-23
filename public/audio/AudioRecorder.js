@@ -108,27 +108,9 @@ export class AudioRecorder {
 
     stopRecord() {
         this.recording = false;
-
-        const buffer = makeAudioBuffer(this.context, this.audioChunks);
-
         const chunkBuffer = getLiveBuffer(this.audioChunks);
         this.currClip.update(chunkBuffer, this.currentRecTime);
         this.currClip = null;
-
-        this.playLastBuffer = (channel) => {
-            const sourceNode = this.context.createBufferSource();
-            sourceNode.buffer = buffer;
-            channel.setInput(sourceNode);
-            sourceNode.start();
-
-            sourceNode.onended = () => {
-                sourceNode.disconnect();
-            }
-        }
-    }
-
-    playLastBuffer(channel) {
-        
     }
     
 }
