@@ -1,5 +1,6 @@
 import Gyro from 'https://dev.luckydye.de/gyro.js';
 import { Action } from './Actions.js';
+import Preferences from './app/Preferences.js';
 import AudioChannel from './audio/AudioChannel.js';
 import { AudioClip } from './audio/AudioClip.js';
 import { AudioRecorder } from './audio/AudioRecorder.js';
@@ -56,6 +57,7 @@ async function main() {
     // setup audiocontext
     await audioContext.audioWorklet.addModule('./audio/audio-processor.js');
     await audioContext.audioWorklet.addModule('./audio/audio-db-meter.js');
+    await audioContext.audioWorklet.addModule('./audio/audio-composer.js');
 
     //new routing
     const mixer = new AudioTrackMixer(audioContext);
@@ -134,10 +136,22 @@ async function main() {
         name: audioOutputDevices.default.label,
         deviceId: audioOutputDevices.default.deviceId,
     };
+
+    const prefOutputDevice = Preferences.get('output-device');
+    if(prefOutputDevice) {
+        const dev = audioOutputDevices.find(dev => dev.deviceId == prefOutputDevice.deviceId);
+        deviceDropdown.value = {
+            name: dev.label,
+            deviceId: dev.deviceId,
+        };
+        audio.setSinkId(dev.deviceId);
+    }
+
     deviceDropdown.addEventListener('change', e => {
         console.log('Output to:', deviceDropdown.value.deviceId);
         audio.setSinkId(deviceDropdown.value.deviceId);
-    })
+        Preferences.set('output-device', deviceDropdown.value);
+    });
 
     controlsElement.appendChild(deviceDropdown);
 }

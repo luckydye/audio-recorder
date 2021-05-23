@@ -3,6 +3,7 @@ import { html, css, LitElement } from 'https://cdn.skypack.dev/lit-element@2.4.0
 import AudioUtils from '../audio/AudioUtils.js';
 import AudioStreamMeterVertecal from './AudioMeterVertical.js';
 import DropdownButton from './DropdownButton.js';
+import Preferences from '../app/Preferences.js';
 
 function createControlKnob(source) {
     const knob = new Gyro.Knob();

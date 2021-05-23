@@ -66,10 +66,26 @@ export default class Timeline extends LitElement {
                 top: 0px;
                 left: calc(var(--time) * 1px - var(--scrollX) * 1px);
                 height: 100%;
-                width: 1px;
-                background: white;
                 pointer-events: none;
                 z-index: 100;
+            }
+            .playhead::before {
+                content: "";
+                position: absolute;
+                top: 0px;
+                width: 3px;
+                height: 20px;
+                background: white;
+                transform: translateX(-50%);
+            }
+            .playhead::after {
+                content: "";
+                position: absolute;
+                top: 0px;
+                width: 1px;
+                height: 100%;
+                background: white;
+                opacity: calc(var(--playing) * 0.5);
             }
         `;
     }
@@ -104,11 +120,6 @@ export default class Timeline extends LitElement {
             selection: [[0, 0], [0, 0]],
         }
 
-        Timer.on('update', e => {
-            this.style.setProperty('--time', Timer.time * gblobalScale);
-            this.style.setProperty('--scrollX', -timeline.scrollX);
-        })
-
         const gblobalScale = 100;
         const trackCount = 2;
 
@@ -130,13 +141,12 @@ export default class Timeline extends LitElement {
             timeline.selection[1][0] = (mouseX - timeline.scrollX) / gblobalScale;
             timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
             mousedown = true;
+
+            Timer.time = (mouseX - timeline.scrollX) / gblobalScale;
         })
         this.addEventListener('mouseup', e => {
             const mouseX = e.x - this.getClientRects()[0].x;
             const mouseY = e.y - this.getClientRects()[0].y;
-            if(!dragging) {
-                Timer.time = (mouseX - timeline.scrollX) / gblobalScale;
-            }
 
             timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
             timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
@@ -192,9 +202,23 @@ export default class Timeline extends LitElement {
                 end - start, 
                 ((trackEnd + trackHeight) - trackStart)
             );
+            ctx.fillStyle = "rgba(100, 100, 100, 0.33)";
+            ctx.fillRect(
+                start + timeline.scrollX, 
+                trackStart + 30,
+                1,
+                ((trackEnd + trackHeight) - trackStart)
+            );
+            ctx.fillRect(
+                start + timeline.scrollX + (end - start), 
+                trackStart + 30,
+                1,
+                ((trackEnd + trackHeight) - trackStart)
+            );
 
             this.style.setProperty('--time', Timer.time * gblobalScale);
             this.style.setProperty('--scrollX', -timeline.scrollX);
+            this.style.setProperty('--playing', Timer.playing ? 1 : 0);
 
             requestAnimationFrame(draw);
 

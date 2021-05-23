@@ -1,9 +1,16 @@
 export class AudioClip {
 
+    get length() {
+        // in seconds
+        return (this.data.length * this.bufferSize) / this.sampleRate;
+    }
+
     constructor(buffer, duration, sampleRate) {
+        this.sampleRate = sampleRate;
         this.data = [];
         this.startTime = 0;
         this.clipOffset = 0;
+        this.bufferSize = 128;
 
         const channelCount = buffer.length;
         const scale = 100; // 100 pixel equals 1second of audio
@@ -37,6 +44,7 @@ export class AudioClip {
             }
 
             canvas.style.setProperty('--startTime', this.startTime);
+            canvas.style.setProperty('--length', this.length);
         }
 
         draw();

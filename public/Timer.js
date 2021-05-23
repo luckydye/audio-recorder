@@ -13,6 +13,7 @@ export default class Timer {
 
     static set time(second) {
         state.time = second;
+        Timer.emit('update');
     }
 
     static play() {
@@ -38,6 +39,10 @@ export default class Timer {
         }
     }
 
+    static emit(event) {
+        eventTarget.dispatchEvent(new Event('update'));
+    }
+
 }
 
 let lastTick = null;
@@ -48,6 +53,7 @@ const updateUI = ms => {
 
         if(Timer.playing) {
             Timer.time += delta / 1000;
+            Timer.emit('update');
         }
     }
     lastTick = ms;
