@@ -47,10 +47,12 @@ export default class DropdownButton extends HTMLElement {
 				}
 
 				:host([active]) .options {
+					display: block;
 					animation: show .06s ease-out;
 				}
 
 				.options {
+					display: none;
 					position: absolute;
 					top: 100%;
 					margin-top: 2px;

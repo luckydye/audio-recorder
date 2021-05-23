@@ -24,9 +24,19 @@ export class AudioClip {
         canvas.ctxt = ctxt;
 
         dragElement(canvas, data => {
-            const newStartTime = this.startTime + (data.delta[0] / 100);
-            if(newStartTime >= 0) {
-                this.startTime = newStartTime; 
+            if(Math.abs(data.absolute[0]) > 2) {
+                const newStartTime = this.startTime + (data.delta[0] / 100);
+                if(newStartTime >= 0) {
+                    this.startTime = newStartTime; 
+                }
+
+                if(!canvas.hasAttribute('dragging')) {
+                    canvas.setAttribute('dragging', '');
+                }
+            }
+
+            if(data.mouseup) {
+                canvas.removeAttribute('dragging');
             }
 
             canvas.style.setProperty('--startTime', this.startTime);

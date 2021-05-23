@@ -53,6 +53,34 @@ function createControlKnob(source) {
     return knob;
 }
 
+const tracks = [
+    {
+        name: 'Track 1',
+        inputDevice: 'f4e4dffa447be44f7557a78785415c2061d06c99472a1a1dfe8b128faed078d3',
+    },
+    {
+        name: 'Track 2',
+        inputDevice: '157bb2c4c2fa454a88354d046bfc2808b573f57733f94df7352b371d3b91fa87',
+    },
+    {
+        name: 'Track 3',
+        inputDevice: '157bb2c4c2fa454a88354d046bfc2808b573f57733f94df7352b371d3b91fa87',
+    }
+]
+
+function loadMixerTracks(audioContext, mixer, jsonTracks) {
+    for(let jsonTrack of jsonTracks) {
+        const track1 = new AudioTrack(audioContext);
+        track1.name = jsonTrack.name;
+        mixer.addTrack(track1);
+    
+        const track = new AudioTrackElement(audioContext, track1);
+        track.id = "tracksElement";
+        track.inputDeviceId = jsonTrack.inputDevice;
+        tracksEle.appendChild(track);
+    }
+}
+
 async function main() {
     // setup audiocontext
     await audioContext.audioWorklet.addModule('./audio/audio-processor.js');
@@ -62,13 +90,7 @@ async function main() {
     //new routing
     const mixer = new AudioTrackMixer(audioContext);
 
-    const track1 = new AudioTrack(audioContext);
-    track1.loadInputSource();
-    mixer.addTrack(track1);
-
-    const track2 = new AudioTrack(audioContext);
-    // track2.loadInputSource();
-    mixer.addTrack(track2);
+    loadMixerTracks(audioContext, mixer, tracks);
 
     const mixOutNode = mixer.getOutputNode(audioContext);
 
@@ -79,37 +101,20 @@ async function main() {
     const knob = createControlKnob(masterChannel);
     headerElement.appendChild(knob);
 
-    // channel.setInput(source);
-
-    // const outputStream = channel.getOutputStream();
-
     const ui = makeUi();
     ui.onStart = () => {
-        track1.recorder.startRecord();
+        mixer.getTrack(0).recorder.startRecord();
     }
     ui.onStop = () => {
-        track1.recorder.stopRecord();
+        mixer.getTrack(0).recorder.stopRecord();
     }
-    ui.onPlay = () => {
-        
-    }
-
-    const track = new AudioTrackElement(audioContext, track1);
-    track.id = "tracksElement";
-    tracksEle.appendChild(track);
-
-    const track2e = new AudioTrackElement(audioContext, track2);
-    track2e.id = "tracksElement2";
-    tracksEle.appendChild(track2e);
 
     // monitor
-    // monitorStream(outputStream, "Input", headerElement);
 
     const masterStream = masterChannel.getOutputStream();
     const masterNode = masterChannel.getOutputNode();
     monitorStream(masterStream, "Output", headerElement);
 
-    // masterNode.connect(audioContext.destination);
     const audio = new Audio();
     audio.srcObject = masterStream;
     audio.play();
@@ -118,8 +123,13 @@ async function main() {
     const devices = await AudioUtils.getAudioDevies();
     const audioOutputDevices = devices.audiooutput;
 
+    console.log('Available Input Devices:');
+    devices.audioinput.forEach((dev, i) => {
+        console.log(i.toString(), '|', dev.label, '-', dev.deviceId);
+    });
+
     console.log('Available Output Devices:');
-    audioOutputDevices.forEach((dev, i) => {
+    devices.audiooutput.forEach((dev, i) => {
         console.log(i.toString(), '|', dev.label, '-', dev.deviceId);
     });
 

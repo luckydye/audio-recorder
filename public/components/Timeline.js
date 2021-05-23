@@ -126,10 +126,12 @@ export default class Timeline extends LitElement {
         }
 
         const gblobalScale = 100;
-        const trackCount = 2;
+        const trackCount = 3;
+        const trackHeight = 153;
 
         let mousedown = false;
         let dragging = 0;
+        let mousedownmove = 0;
         let deltaX = 0;
 
         this.addEventListener('wheel', e => {
@@ -141,34 +143,57 @@ export default class Timeline extends LitElement {
         this.addEventListener('mousedown', e => {
             const mouseX = e.x - this.getClientRects()[0].x;
             const mouseY = e.y - this.getClientRects()[0].y;
-            timeline.selection[0][0] = Math.floor((mouseY - 30) / gblobalScale);
-            timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
-            timeline.selection[1][0] = (mouseX - timeline.scrollX) / gblobalScale;
-            timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
-            mousedown = true;
 
-            Timer.time = (mouseX - timeline.scrollX) / gblobalScale;
+            if(e.target == this) {
+                timeline.selection[0][0] = Math.min(Math.floor((mouseY - 30) / trackHeight), trackCount - 1);
+                timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / trackHeight), trackCount - 1);
+                timeline.selection[1][0] = (mouseX - timeline.scrollX) / gblobalScale;
+                timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
+    
+                Timer.time = (mouseX - timeline.scrollX) / gblobalScale;
+            }
+
+            mousedown = true;
+            mousedownmove = true;
         })
         this.addEventListener('mouseup', e => {
             const mouseX = e.x - this.getClientRects()[0].x;
             const mouseY = e.y - this.getClientRects()[0].y;
 
-            timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
-            timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
+            if(e.target == this) {
+                if(Math.abs(deltaX) > 2) {
+                    timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / trackHeight), trackCount - 1);
+                    timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
+                }
+            }
+            
+            if(Math.abs(deltaX) < 2) {
+                timeline.selection[0][0] = Math.min(Math.floor((mouseY - 30) / trackHeight), trackCount - 1);
+                timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / trackHeight), trackCount - 1);
+                timeline.selection[1][0] = (mouseX - timeline.scrollX) / gblobalScale;
+                timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
+                Timer.time = (mouseX - timeline.scrollX) / gblobalScale;
+            }
+
             dragging = false;
             mousedown = false;
-
+            mousedownmove = false;
             deltaX = 0;
         })
         window.addEventListener('mousemove', e => {
             const mouseX = e.x - this.getClientRects()[0].x;
             const mouseY = e.y - this.getClientRects()[0].y;
-            deltaX += e.movementX;
-            if(!dragging && mousedown && Math.abs(deltaX) > 1) {
-                dragging = true;
+            
+            if(mousedownmove) {
+                deltaX += e.movementX;
+            }
+            if(e.target == this) {
+                if(!dragging && mousedown && Math.abs(deltaX) > 2) {
+                    dragging = true;
+                }
             }
             if(dragging) {
-                timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / gblobalScale), trackCount - 1);
+                timeline.selection[0][1] = Math.min(Math.floor((mouseY - 30) / trackHeight), trackCount - 1);
                 timeline.selection[1][1] = (mouseX - timeline.scrollX) / gblobalScale;
             }
 
@@ -197,8 +222,6 @@ export default class Timeline extends LitElement {
 
             const selection = timeline.selection;
             ctx.fillStyle = "rgba(100, 100, 100, 0.25)";
-
-            const trackHeight = 153;
 
             const trackStart = Math.min(...selection[0]) * trackHeight;
             const trackEnd = Math.max(...selection[0]) * trackHeight;
@@ -259,6 +282,11 @@ export default class Timeline extends LitElement {
                     <div class="track">
                         <div class="track-content">
                             <slot name="track2"></slot>
+                        </div>
+                    </div>
+                    <div class="track">
+                        <div class="track-content">
+                            <slot name="track3"></slot>
                         </div>
                     </div>
                 </div>

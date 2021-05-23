@@ -138,6 +138,9 @@ export class AudioTrack {
     setInputDevice(deviceId) {
         return this.audioSource.setInputDevice(deviceId);
     }
+    getInputDevice() {
+        return this.audioSource.deviceId;
+    }
 
     getInputNode() {
         return this.channel.getOutputNode();

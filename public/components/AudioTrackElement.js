@@ -78,6 +78,8 @@ export default class AudioTrackElement extends LitElement {
         this.meter = new AudioStreamMeterVertecal(audioContext);
         this.meter.setAudioSourceNode(this.track.getInputNode());
 
+        this.inputDeviceId = null;
+
         this.initDeviceSelect();
     }
 
@@ -85,8 +87,13 @@ export default class AudioTrackElement extends LitElement {
         const devices = await AudioUtils.getAudioDevies();
         const audioInputDevices = devices.audioinput;
 
-        const device = audioInputDevices[0];
-        this.track.setInputDevice(device.deviceId);
+        if(this.inputDeviceId) {
+            this.track.setInputDevice(this.inputDeviceId);
+        } else {
+            const device = audioInputDevices[0];
+            this.inputDeviceId = device.deviceId;
+            this.track.setInputDevice(device.deviceId);
+        }
         
         const deviceDropdown = new DropdownButton();
         deviceDropdown.options = audioInputDevices.map(dev => {
@@ -98,6 +105,12 @@ export default class AudioTrackElement extends LitElement {
         deviceDropdown.addEventListener('change', e => {
             this.track.setInputDevice(deviceDropdown.value.deviceId);
         })
+
+        const currDevice = audioInputDevices.find(dev => dev.deviceId == this.inputDeviceId);
+        deviceDropdown.value = {
+            name: currDevice.label,
+            deviceId: currDevice.deviceId,
+        }
 
         // knob
 

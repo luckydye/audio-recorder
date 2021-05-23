@@ -7,6 +7,10 @@ export class AudioTrackMixer {
         this.destination = this.context.createMediaStreamDestination();
     }
 
+    getTrack(index) {
+        return [...this.tracks][index];
+    }
+
     addTrack(track) {
         const outputNode = track.getOutputNode();
         outputNode.connect(this.destination);

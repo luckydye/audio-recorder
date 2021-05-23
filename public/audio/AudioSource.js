@@ -12,6 +12,7 @@ export default class AudioSource extends EventTarget {
         this.stream = null;
         this.currentSource = null;
         this.channels = [0, 1];
+        this.deviceId = null;
     }
 
     setInputChannel(channel) {
@@ -53,6 +54,7 @@ export default class AudioSource extends EventTarget {
 
     async setInputDevice(deviceId) {
         return AudioUtils.getDeviceStream(deviceId).then(stream => {
+            this.deviceId = deviceId;
             this.setInputStream(stream);
         })
     }
