@@ -98,6 +98,9 @@ audio-timeline canvas {
     width: calc(var(--length) * 100px);
     opacity: 0.75;
 }
+audio-timeline canvas:hover {
+    opacity: 0.8;
+}
 #tracksEle {
     margin-top: 30px;
 }

@@ -1,3 +1,5 @@
+import { dragElement } from "../util.js";
+
 export class AudioClip {
 
     get length() {
@@ -20,6 +22,16 @@ export class AudioClip {
 
         const ctxt = canvas.getContext("2d");
         canvas.ctxt = ctxt;
+
+        dragElement(canvas, data => {
+            const newStartTime = this.startTime + (data.delta[0] / 100);
+            if(newStartTime >= 0) {
+                this.startTime = newStartTime; 
+            }
+
+            canvas.style.setProperty('--startTime', this.startTime);
+            canvas.style.setProperty('--length', this.length);
+        })
 
         const draw = () => {
             const dataLength = sampleRate * duration;
