@@ -10,6 +10,7 @@ import { AudioTrackMixer } from './audio/AudioTrackMixer.js';
 import AudioUtils from './audio/AudioUtils.js';
 import AudioStreamMeter from './components/AudioMeter.js';
 import './components/AudioMeterVertical.js';
+import AudioTrackChannel from './components/AudioTrackChannel.js';
 import AudioTrackElement from './components/AudioTrackElement.js';
 import DropdownButton from './components/DropdownButton.js';
 import PlaybackControls from './components/PlaybackControls.js';
@@ -82,6 +83,9 @@ function loadMixerTracks(audioContext, mixer, jsonTracks) {
         track.id = "tracksElement";
         track.inputDeviceId = jsonTrack.inputDevice;
         tracksEle.appendChild(track);
+    
+        const mixerTrack = new AudioTrackChannel(track1);
+        mixerContainer.appendChild(mixerTrack);
     }
 }
 

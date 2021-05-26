@@ -63,7 +63,7 @@ export default class AudioStreamMeterVertecal extends AudioStreamMeter {
                     margin-bottom: 1px;
                     background: rgba(0, 0, 0, 0.25);
                     height: 100%;
-                    width: 5px;
+                    width: 100%;
                 }
             </style>
             ${this.name ? html`
