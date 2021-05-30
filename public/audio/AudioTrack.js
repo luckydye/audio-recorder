@@ -53,21 +53,35 @@ export class AudioTrack {
             console.log(this.name, elapsedTime);
         });
 
+        let updateAge = 1;
+
         Timer.on('update', e => {
             if (!lastTick)
                 return;
 
             const deltaTime = (performance.now() - lastTick) / 1000;
-            const buffers = this.getBuffersAt(Timer.time, 4);
-            const buffer = buffers.buffers;
-            const index = buffers.index;
-                
-            // stream the realtime audio to the worklet
-            if(Timer.playing) {
-                this.audioComposer.port.postMessage(buffer);
-            } else {
-                this.audioComposer.port.postMessage(null);
-            } 
+
+            updateAge += deltaTime;
+
+            const packetPerSecond = this.context.sampleRate / 128;
+            const packetsPerUpdate = 20;
+
+            // make timing as accurate as possible
+            // send the next packets exactly after the last ended / or buffer the old ones or somthing idk
+            if(updateAge >= (packetsPerUpdate / packetPerSecond)) {
+                updateAge = 0;
+
+                const buffers = this.getBuffersAt(Timer.time, packetsPerUpdate);
+                const buffer = buffers.buffers;
+                const index = buffers.index;
+                    
+                // stream the realtime audio to the worklet
+                if(Timer.playing) {
+                    this.audioComposer.port.postMessage(buffer);
+                } else {
+                    this.audioComposer.port.postMessage(null);
+                } 
+            }
 
             elapsedTime += deltaTime;
             lastTick = performance.now();
