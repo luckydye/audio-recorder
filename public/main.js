@@ -57,17 +57,14 @@ function createControlKnob(source) {
 const tracks = [
     {
         name: 'Track 1',
-        inputDevice: 'f4e4dffa447be44f7557a78785415c2061d06c99472a1a1dfe8b128faed078d3',
         armed: true,
     },
     {
         name: 'Track 2',
-        inputDevice: '157bb2c4c2fa454a88354d046bfc2808b573f57733f94df7352b371d3b91fa87',
         armed: true,
     },
     {
         name: 'Track 3',
-        inputDevice: '157bb2c4c2fa454a88354d046bfc2808b573f57733f94df7352b371d3b91fa87',
         armed: false,
     }
 ]
@@ -89,18 +86,50 @@ function loadMixerTracks(audioContext, mixer, jsonTracks) {
     }
 }
 
+function featureDetectAsyncAwait() {
+    let isAsync = true;
+
+    try {
+        eval('async () => {}');
+    } catch (e) {
+        if (e instanceof SyntaxError)
+            isAsync = false;
+        else
+            throw e; // throws CSP error
+    }
+    return isAsync;
+}
+
 async function main() {
+    console.log("initialising");
+
+    const detectAwait = featureDetectAsyncAwait();
+    console.log("async/await supported:", detectAwait);
+
+    console.log('worklets:', audioContext.audioWorklet ? 'yes' : 'no');
+    
     // setup audiocontext
-    await audioContext.audioWorklet.addModule('./audio/audio-proxy.js');
-    await audioContext.audioWorklet.addModule('./audio/audio-db-meter.js');
-    await audioContext.audioWorklet.addModule('./audio/audio-composer.js');
+    try {
+        await audioContext.audioWorklet.addModule('./audio/audio-proxy.js');
+        await audioContext.audioWorklet.addModule('./audio/audio-db-meter.js');
+        await audioContext.audioWorklet.addModule('./audio/audio-composer.js');
+        console.log("worklets loaded");
+    } catch(err) {
+        console.error('Worklets failed initilising');
+    }
 
     //new routing
     const mixer = new AudioTrackMixer(audioContext);
-
-    loadMixerTracks(audioContext, mixer, tracks);
+    
+    console.log('Mixer loaded');
+    try {
+        loadMixerTracks(audioContext, mixer, tracks);
+    } catch(err) {
+        console.error(err);
+    }
 
     const mixOutNode = mixer.getOutputNode(audioContext);
+
 
     // init routing
     const masterChannel = new AudioChannel(audioContext);
@@ -212,7 +241,38 @@ function makeUi() {
     return callbacks;
 }
 
-main();
+function enableDebugMode() {
+    debug.innerHTML += "Test" + '\n';
+    window.addEventListener('error', e => {
+        debug.innerHTML += JSON.stringify(e) + '\n';
+    })
+    window.addEventListener('warn', e => {
+        debug.innerHTML += JSON.stringify(e) + '\n';
+    })
+    const log = console.log;
+    const error = console.error;
+    console.error = (...strs) => {
+        debug.innerHTML += `<span style="color:indianred;">${strs.join(" ")}</span>` + '\n';
+        error(...strs);
+    }
+    console.log = (...strs) => {
+        debug.innerHTML += strs.join(" ") + '\n';
+        log(...strs);
+    }
+    
+    console.log('tset', AudioWorkletNode);
+}
+
+if(location.search.match("debug")) {
+    enableDebugMode();
+}
+
+try {
+    main();
+} catch(err) {
+    console.error('failed to initialise');
+    console.error(err);
+}
 
 // if ('serviceWorker' in navigator) {
 //     navigator.serviceWorker.register('./sw.js', {
