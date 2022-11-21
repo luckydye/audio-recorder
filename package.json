@@ -4,7 +4,8 @@
   "description": "**Todo:**",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite app",
+    "build": "vite build app --outDir=../dist"
   },
   "repository": {
     "type": "git",
