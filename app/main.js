@@ -32,6 +32,10 @@ Action.register({
 
 const audioContext = new AudioContext();
 
+window.onclick = () => {
+  audioContext.resume();
+};
+
 function monitorStream(stream, name, contianer) {
   const meter = new AudioStreamMeter(audioContext, name);
   meter.setSourceStream(stream);
