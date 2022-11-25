@@ -60,7 +60,7 @@ export class AudioTrack {
       updateAge += deltaTime;
 
       const packetPerSecond = this.context.sampleRate / 128;
-      const packetsPerUpdate = 20;
+      const packetsPerUpdate = 5;
 
       // make timing as accurate as possible
       // send the next packets exactly after the last ended / or buffer the old ones or somthing idk
@@ -109,7 +109,7 @@ export class AudioTrack {
     let currentClip = this.getClipAt(second);
     if (currentClip) {
       const timeOffset = second - currentClip.startTime;
-      const dataIndex = Math.floor(
+      const dataIndex = Math.round(
         (timeOffset / currentClip.length) * currentClip.data.length
       );
       const dataBlock = currentClip.data.slice(
