@@ -69,7 +69,7 @@ const tracks = [
   },
   {
     name: "Track 3",
-    armed: false,
+    armed: true,
   },
 ];
 
@@ -115,6 +115,7 @@ async function main() {
     await audioContext.audioWorklet.addModule("./audio/audio-proxy.js");
     await audioContext.audioWorklet.addModule("./audio/audio-db-meter.js");
     await audioContext.audioWorklet.addModule("./audio/audio-composer.js");
+    await audioContext.audioWorklet.addModule("./audio/audio-player.js");
     console.log("worklets loaded");
   } catch (err) {
     console.error("Worklets failed initilising");
@@ -278,14 +279,18 @@ try {
   console.error(err);
 }
 
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('./sw.js', {
-//         sopce: '/images/'
-//     }).then(registration => {
-//         // Registration was successful
-//         console.log('ServiceWorker registration successful with scope: ', registration.scope);
-//     }, function (err) {
-//         // registration failed :(
-//         console.log('ServiceWorker registration failed: ', err);
-//     });
-// }
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js", {}).then(
+    (registration) => {
+      // Registration was successful
+      console.log(
+        "ServiceWorker registration successful with scope: ",
+        registration.scope
+      );
+    },
+    function (err) {
+      // registration failed :(
+      console.log("ServiceWorker registration failed: ", err);
+    }
+  );
+}

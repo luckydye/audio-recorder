@@ -137,6 +137,13 @@ export default class AudioTrackElement extends LitElement {
             <div class="track-controls">
               ${this.deopdown}
               <div class="input-gain">${this.knob}</div>
+              <input
+                type="checkbox"
+                ?checked="${this.track.armed}"
+                @change="${(ev) => {
+                  this.track.armed = ev.target.checked;
+                }}"
+              />
             </div>
           </div>
           <div class="meter">${this.meter}</div>
